@@ -32,29 +32,24 @@ export async function POST(req: Request) {
             );
         }
 
-        const token = jwt.sign(
-            {
-                id: user.id,
-                role: user.role,
-            },
-            process.env.JWT_SECRET!,
-            {
-                expiresIn: "7d",
-            }
+        const secret = process.env.JWT_SECRET;
+
+        if (!secret) {
+        return NextResponse.json(
+            { success: false, message: "JWT secret not configured" },
+            { status: 500 }
         );
+        }
 
-        const response = NextResponse.json({
-            success: true,
+        const token = jwt.sign(
+        {
+            id: user.id,
             role: user.role,
-        });
+        }, secret, { expiresIn: "7d" } );
 
+        const response = NextResponse.json({ success: true, role: user.role });
 
-        response.cookies.set("token", token, {
-            httpOnly: true,
-            secure: false,
-            sameSite: "lax",
-            path: "/",
-        });
+        response.cookies.set("token", token, { httpOnly: true, secure: false, sameSite: "lax", path: "/" });
 
         return response;
     } catch (error) {

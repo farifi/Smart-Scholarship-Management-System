@@ -31,12 +31,13 @@ export async function POST(req: Request) {
         name,
         email,
         password: hashedPassword,
-        role: "USER",
+        role: "APPLICANT",
       },
     });
 
     return NextResponse.json({
       success: true,
+      role: "APPLICANT",
       message: "User created successfully",
     });
   } catch (error) {
